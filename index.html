@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daniel Effort</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Daniel Effort, editor de video corto en Bogotá. Reels, TikToks y Shorts con gancho, subtítulos dinámicos y ritmo.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<meta property="og:title" content="Daniel Effort &middot; Editor de video corto">
+<meta property="og:description" content="Reels, TikToks, Shorts y anuncios con gancho, subt&iacute;tulos din&aacute;micos y ritmo. Bogot&aacute;.">
+<meta property="og:url" content="https://danieleffort.github.io/">
+<meta property="og:image" content="https://danieleffort.github.io/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" hreflang="es" href="https://danieleffort.github.io/">
+<link rel="alternate" hreflang="en" href="https://danieleffort.github.io/en/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Familjen+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: una línea de tiempo de edición. Header = monitor con REC y timecode; las secciones se leen como pistas (TXT, V1, A1, A2). */
+:root {
+  --bg: #0d0d10;
+  --surface: #16161b;
+  --line: #2a2a32;
+  --fg: #efece6;
+  --muted: #9b99a2;
+  --rec: #ff3b2f;
+  --rec-ink: #ffffff;
+  --clip-v: #2b5f73;
+  --clip-a: #2f6b4d;
+  --font-display: "Anton", "Impact", "Arial Narrow", sans-serif;
+  --font-body: "Familjen Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Consolas", monospace;
+  --step--1: .8125rem;
+  --step-0: 1rem;
+  --step-1: 1.25rem;
+  --step-2: clamp(1.75rem, 1.2rem + 2.4vw, 2.75rem);
+  --step-3: clamp(3rem, 1.6rem + 6.4vw, 6.25rem);
+  --wrap: 1140px;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 400 var(--step-0)/1.6 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg);
+}
+img, video { max-width: 100%; display: block; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--rec); outline-offset: 3px; }
+
+.wrap {
+  max-width: var(--wrap);
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--step-2);
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: .01em;
+}
+p { margin: 0; }
+
+/* Botones */
+.btn {
+  display: inline-flex; align-items: center; gap: .6em;
+  padding: .85em 1.3em;
+  border-radius: 999px;
+  font: 600 var(--step-0)/1 var(--font-body);
+  text-decoration: none;
+  border: 1px solid var(--line);
+  transition: transform .15s ease, background-color .15s ease, border-color .15s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn-rec { background: var(--rec); color: var(--rec-ink); border-color: var(--rec); }
+.btn-rec:hover { background: #ff5446; }
+.btn-ghost { background: transparent; color: var(--fg); }
+.btn-ghost:hover { border-color: var(--fg); }
+.btn svg { width: 1.1em; height: 1.1em; flex: none; }
+
+/* Header tipo monitor */
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.top .wrap {
+  display: flex; align-items: center; gap: 16px;
+  padding-block: 12px;
+}
+.brand { font-family: var(--font-display); font-size: 1.25rem; letter-spacing: .04em; text-transform: uppercase; text-decoration: none; }
+.rec { display: inline-flex; align-items: center; gap: .45em; color: var(--fg); }
+.rec i { width: .55em; height: .55em; border-radius: 50%; background: var(--rec); animation: blink 1.2s steps(2, start) infinite; }
+.tc { font-variant-numeric: tabular-nums; margin-left: auto; }
+.top .btn { padding: .6em 1em; font-size: var(--step--1); }
+@keyframes blink { to { visibility: hidden; } }
+.lang { text-decoration: none; color: var(--fg); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; }
+.lang:hover { border-color: var(--fg); }
+@media (max-width: 560px) { .tc { display: none; } .lang { margin-left: auto; } }
+
+/* Hero */
+.hero .wrap {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+  padding-block: clamp(40px, 7vw, 96px) clamp(48px, 6vw, 80px);
+}
+.hero-copy { display: grid; gap: 24px; min-width: 0; }
+.caption-h1 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--step-3);
+  line-height: .98;
+  text-transform: uppercase;
+  letter-spacing: .005em;
+}
+.caption-h1 .w {
+  display: inline-block;
+  padding: 0 .08em;
+  margin: 0 -.02em .06em;
+  border-radius: .06em;
+  transition: background-color .12s linear, color .12s linear;
+}
+.caption-h1 .w.on { background: var(--rec); color: var(--rec-ink); }
+.lede { font-size: var(--step-1); line-height: 1.5; color: var(--fg); max-width: 34ch; }
+.lede strong { font-weight: 600; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+.hint { color: var(--muted); font-size: var(--step--1); max-width: 46ch; }
+
+/* Teléfono 9:16 con guías de zona segura */
+.phone {
+  position: relative;
+  width: min(100%, 300px);
+  justify-self: center;
+  aspect-ratio: 9 / 16;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 0 0 1px var(--line), 0 0 0 10px var(--surface), 0 30px 80px -20px rgba(255, 59, 47, .35);
+}
+.phone img, .phone video { width: 100%; height: 100%; object-fit: cover; }
+.safe {
+  position: absolute; inset: 8% 6% 14% 6%;
+  border: 1px dashed rgba(255, 255, 255, .35);
+  pointer-events: none;
+}
+.phone .tag {
+  position: absolute; left: 12px; top: 12px;
+  background: rgba(0, 0, 0, .6); color: #fff;
+  padding: 4px 8px; border-radius: 4px;
+}
+.play {
+  position: absolute; left: 50%; bottom: 18%; transform: translateX(-50%);
+  display: inline-flex; align-items: center; gap: .5em;
+  border: 0; cursor: pointer;
+  background: var(--rec); color: var(--rec-ink);
+  font: 600 var(--step--1)/1 var(--font-body);
+  padding: .8em 1.1em; border-radius: 999px;
+  white-space: nowrap;
+}
+@media (max-width: 820px) {
+  .hero .wrap { grid-template-columns: 1fr; }
+  .phone { width: min(100%, 260px); }
+}
+
+/* Línea de tiempo */
+.section { padding-block: clamp(56px, 8vw, 104px); border-top: 1px solid var(--line); }
+.section-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 32px; margin-bottom: 32px; }
+.section-head p { color: var(--muted); max-width: 52ch; }
+
+.tl-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.tl { min-width: 680px; position: relative; padding: 14px 16px 18px 88px; }
+.ruler { position: relative; height: 22px; margin-bottom: 8px; border-bottom: 1px solid var(--line); }
+.ruler span { position: absolute; top: 0; transform: translateX(-50%); font-variant-numeric: tabular-nums; }
+.ruler span:first-child { transform: none; }
+.ruler span:last-child { transform: translateX(-100%); }
+.track { position: relative; height: 34px; margin-top: 6px; }
+.track > b {
+  position: absolute; left: -76px; top: 50%; transform: translateY(-50%);
+  width: 64px; font-weight: 500;
+}
+.clip-b {
+  position: absolute; top: 0; bottom: 0;
+  border-radius: 5px;
+  padding: 0 8px;
+  display: flex; align-items: center;
+  font: 500 .75rem/1 var(--font-body);
+  color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  border: 1px solid rgba(255, 255, 255, .12);
+}
+.k-txt { background: #5b3fa6; }
+.k-hook { background: var(--rec); }
+.k-v { background: var(--clip-v); }
+.k-a {
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 2px, transparent 2px 5px) center / 100% 46% no-repeat,
+    var(--clip-a);
+}
+.k-sfx { background: #8a6a1f; }
+.playhead {
+  position: absolute; top: 10px; bottom: 10px; left: 88px; width: 2px;
+  background: var(--fg);
+  animation: sweep 9s linear infinite;
+  pointer-events: none;
+}
+.playhead::before {
+  content: ""; position: absolute; top: -2px; left: -5px;
+  border: 6px solid transparent; border-top: 8px solid var(--fg);
+}
+@keyframes sweep { from { left: 88px; } to { left: calc(100% - 16px); } }
+
+.legend { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin-top: 32px; }
+.legend div { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.legend h3 { font-size: var(--step-1); font-weight: 600; }
+.legend p { color: var(--muted); }
+.legend .mono i { display: inline-block; width: .7em; height: .7em; border-radius: 2px; margin-right: .5em; vertical-align: -.05em; }
+@media (max-width: 900px) { .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .legend { grid-template-columns: 1fr; } }
+
+/* Trabajos */
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2.5vw, 32px); }
+@media (max-width: 820px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* Extras: dos verticales + uno 16:9 a la misma altura (3.16 = 16/9 ÷ 9/16) */
+.grid-extra { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 3.16fr); }
+.subhead { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 32px; margin: clamp(48px, 6vw, 72px) 0 24px; }
+.subhead h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.75rem; text-transform: uppercase; letter-spacing: .01em; }
+@media (max-width: 820px) {
+  .grid-extra { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-extra .card.wide { grid-column: 1 / -1; }
+}
+.card { display: grid; gap: 12px; margin: 0; min-width: 0; }
+.frame {
+  position: relative; aspect-ratio: 9 / 16; max-width: 100%;
+  border-radius: 14px; overflow: hidden; background: #000;
+  border: 1px solid var(--line);
+}
+.frame.h { aspect-ratio: 16 / 9; }
+.frame img, .frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.frame .num {
+  position: absolute; left: 10px; top: 10px; z-index: 2;
+  background: rgba(0, 0, 0, .62); color: #fff;
+  padding: 3px 7px; border-radius: 4px;
+}
+.frame .sound {
+  position: absolute; right: 10px; bottom: 10px; z-index: 2;
+  border: 0; cursor: pointer;
+  background: rgba(0, 0, 0, .62); color: #fff;
+  width: 38px; height: 38px; border-radius: 50%;
+  display: grid; place-items: center;
+}
+.frame .sound svg { width: 18px; height: 18px; }
+.card h3 { font-size: var(--step-1); font-weight: 600; line-height: 1.25; }
+.card figcaption { display: grid; gap: 4px; }
+.card p { color: var(--muted); font-size: .9375rem; }
+.card .kind { color: var(--rec); }
+
+/* Proceso */
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; counter-reset: s; }
+.steps li { list-style: none; padding: 20px 20px 24px 0; border-top: 2px solid var(--line); display: grid; gap: 8px; align-content: start; min-width: 0; }
+.steps li:first-child { border-top-color: var(--rec); }
+.steps h3 { font-size: var(--step-1); font-weight: 600; }
+.steps p { color: var(--muted); }
+.steps { padding: 0; margin: 0; }
+@media (max-width: 820px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .steps { grid-template-columns: 1fr; } }
+
+.offer {
+  margin-top: 40px;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 32px;
+  padding: clamp(20px, 3vw, 32px);
+  border: 1px dashed var(--rec);
+  border-radius: 14px;
+}
+.offer div { display: grid; gap: 6px; min-width: 0; max-width: 58ch; }
+.offer h3 { font-family: var(--font-display); font-weight: 400; font-size: 1.75rem; text-transform: uppercase; letter-spacing: .01em; }
+.offer p { color: var(--muted); }
+
+/* Sobre mí */
+.about .wrap { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
+.crop { position: relative; padding: 18px; max-width: 420px; }
+.crop img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; filter: grayscale(1) contrast(1.05); border-radius: 4px; }
+.crop::before, .crop::after, .crop span::before, .crop span::after {
+  content: ""; position: absolute; width: 22px; height: 22px; border: 0 solid var(--rec);
+}
+.crop::before { left: 0; top: 0; border-left-width: 2px; border-top-width: 2px; }
+.crop::after { right: 0; top: 0; border-right-width: 2px; border-top-width: 2px; }
+.crop span::before { left: 0; bottom: 0; border-left-width: 2px; border-bottom-width: 2px; }
+.crop span::after { right: 0; bottom: 0; border-right-width: 2px; border-bottom-width: 2px; }
+.crop .mono { position: absolute; left: 18px; bottom: -6px; transform: translateY(100%); }
+.about-copy { display: grid; gap: 18px; max-width: 60ch; }
+.about-copy p { font-size: 1.0625rem; }
+.about-copy p + p { color: var(--muted); }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.tools span { border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; font-size: var(--step--1); }
+@media (max-width: 820px) { .about .wrap { grid-template-columns: 1fr; } .crop { max-width: 300px; } }
+
+/* Cierre */
+.final .wrap { display: grid; gap: 24px; justify-items: start; }
+.final h2 { font-size: var(--step-3); line-height: .98; max-width: 14ch; }
+.final h2 em { font-style: normal; background: var(--rec); color: var(--rec-ink); padding: 0 .08em; border-radius: .06em; }
+.final p { font-size: var(--step-1); max-width: 40ch; }
+.socials { display: flex; flex-wrap: wrap; gap: 12px; }
+.mail { font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.mail a { color: var(--fg); }
+.mail button { font: inherit; color: var(--fg); background: none; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; cursor: pointer; }
+footer { border-top: 1px solid var(--line); }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding-block: 24px 32px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rec i, .playhead { animation: none; }
+  .playhead { left: 22%; }
+  .btn { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#inicio">Daniel Effort</a>
+    <span class="rec mono"><i></i>REC</span>
+    <span class="tc mono" id="tc">00:00:00:00</span>
+    <a class="lang mono" href="/en/" hreflang="en" lang="en">EN</a>
+    <a class="btn btn-rec js-wa" href="#contacto">Escríbeme</a>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="mono">Editor de video corto · Bogotá</span>
+        <h1 class="caption-h1" id="caption" aria-label="Edito videos que nadie quiere saltar">
+          <span class="w">Edito</span> <span class="w">videos</span> <span class="w">que</span> <span class="w">nadie</span> <span class="w">quiere</span> <span class="w on">saltar.</span>
+        </h1>
+        <p class="lede">Reels, TikToks y Shorts con <strong>gancho en los primeros 3 segundos</strong>, subtítulos que se leen solos y un ritmo que no deja ir. Para creadores de contenido, marcas y negocios.</p>
+        <div class="cta-row">
+          <a class="btn btn-rec js-wa" href="#contacto">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.8 14.1c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1-2.5c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.3 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.6 2.1 1.1 1 2.1 1.3 2.4 1.4.3.2.5.1.6-.1l.9-1.1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.2.1.7-.1 1.4Z"/></svg>
+            Escríbeme por WhatsApp
+          </a>
+          <a class="btn btn-ghost" href="#trabajos">Ver trabajos</a>
+        </div>
+        <p class="hint">¿Te escribí por Instagram o TikTok? Respóndeme por ahí mismo, también vale.</p>
+      </div>
+
+      <div class="phone" id="presentacion">
+        <img src="media/poster-presentacion.jpg" alt="Daniel hablando a cámara en su video de presentación" id="intro-poster">
+        <span class="safe" aria-hidden="true"></span>
+        <span class="tag mono">Presentación · 9:16</span>
+        <button class="play" type="button" id="intro-play" hidden>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          Mira quién soy
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="proceso-video">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Lo que le pasa a tu video</h2>
+        <p>Así se ve un Reel de 30 segundos en mi línea de tiempo. Cada capa tiene un trabajo.</p>
+      </div>
+
+      <div class="tl-scroll" role="img" aria-label="Línea de tiempo de un Reel de 30 segundos con pistas de texto, video, voz y efectos">
+        <div class="tl">
+          <div class="ruler mono">
+            <span style="left:0">00:00</span><span style="left:16.66%">00:05</span><span style="left:33.33%">00:10</span><span style="left:50%">00:15</span><span style="left:66.66%">00:20</span><span style="left:83.33%">00:25</span><span style="left:100%">00:30</span>
+          </div>
+          <div class="track"><b class="mono">TXT</b>
+            <span class="clip-b k-hook" style="left:0;width:10%">Gancho</span>
+            <span class="clip-b k-txt" style="left:10.4%;width:73%">Subtítulos palabra por palabra</span>
+            <span class="clip-b k-hook" style="left:84%;width:16%">Llamado a la acción</span>
+          </div>
+          <div class="track"><b class="mono">V1</b>
+            <span class="clip-b k-v" style="left:0;width:30%">Cámara</span>
+            <span class="clip-b k-v" style="left:30.4%;width:13%">B-roll</span>
+            <span class="clip-b k-v" style="left:43.8%;width:29%">Cámara + zoom</span>
+            <span class="clip-b k-v" style="left:73.2%;width:10.4%">B-roll</span>
+            <span class="clip-b k-v" style="left:84%;width:16%">Cierre</span>
+          </div>
+          <div class="track"><b class="mono">A1 Voz</b>
+            <span class="clip-b k-a" style="left:0;width:100%">Voz sin silencios ni muletillas</span>
+          </div>
+          <div class="track"><b class="mono">A2 SFX</b>
+            <span class="clip-b k-sfx" style="left:9%;width:5%">Whoosh</span>
+            <span class="clip-b k-sfx" style="left:29.6%;width:5%">Pop</span>
+            <span class="clip-b k-sfx" style="left:62%;width:11%">Riser</span>
+            <span class="clip-b k-sfx" style="left:83%;width:6%">Hit</span>
+          </div>
+          <span class="playhead" aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div>
+          <span class="mono"><i style="background:var(--rec)"></i>TXT · 0–3 s</span>
+          <h3>Gancho</h3>
+          <p>Los primeros 3 segundos deciden si se quedan. Abro con la frase más fuerte, no con el saludo.</p>
+        </div>
+        <div>
+          <span class="mono"><i style="background:#5b3fa6"></i>TXT</span>
+          <h3>Subtítulos</h3>
+          <p>Mucha gente ve sin sonido. Los subtítulos cuentan la historia solos y resaltan lo que importa.</p>
+        </div>
+        <div>
+          <span class="mono"><i style="background:var(--clip-v)"></i>V1 · A1</span>
+          <h3>Ritmo</h3>
+          <p>Quito silencios y muletillas, y meto zooms o B-roll justo donde la atención empieza a bajar.</p>
+        </div>
+        <div>
+          <span class="mono"><i style="background:#8a6a1f"></i>A2</span>
+          <h3>Sonido</h3>
+          <p>Efectos y música que marcan cada corte sin tapar tu voz.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="trabajos">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Trabajos</h2>
+        <span class="mono">06 clips · formato 9:16</span>
+      </div>
+      <div class="grid" id="grid"></div>
+      <div class="subhead">
+        <h3>Más trabajos</h3>
+        <span class="mono">Anuncio · motion · 16:9</span>
+      </div>
+      <div class="grid grid-extra" id="grid-extra"></div>
+    </div>
+  </section>
+
+  <section class="section" id="como-trabajamos">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Cómo trabajamos</h2>
+        <p>Sin vueltas. Tú grabas, yo me encargo del resto.</p>
+      </div>
+      <ol class="steps">
+        <li><span class="mono">Paso 1</span><h3>Me mandas tu material</h3><p>El video en bruto por Drive o WeTransfer y, si tienes, un ejemplo del estilo que te gusta.</p></li>
+        <li><span class="mono">Paso 2</span><h3>Edito</h3><p>Te entrego el primer corte en 24 a 48 horas.</p></li>
+        <li><span class="mono">Paso 3</span><h3>Ajustamos</h3><p>Dos rondas de cambios incluidas, para que quede como lo imaginas.</p></li>
+        <li><span class="mono">Paso 4</span><h3>Publicas</h3><p>Te lo entrego listo para subir, en 1080 × 1920.</p></li>
+      </ol>
+
+      <div class="offer">
+        <div>
+          <span class="mono">Prueba sin costo</span>
+          <h3>Hasta 30 segundos gratis</h3>
+          <p>Mándame un video tuyo y te edito un fragmento de 15 a 30 segundos. Si te gusta cómo queda, hablamos del resto.</p>
+        </div>
+        <a class="btn btn-rec js-wa" data-msg="Hola Daniel, vi tu portafolio y quiero la prueba gratis." href="#contacto">Pedir mi prueba</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section about" id="sobre-mi">
+    <div class="wrap">
+      <div class="crop">
+        <img src="media/foto-hero.jpg" alt="Retrato de Daniel Olaya encuadrando con las manos" loading="lazy">
+        <span aria-hidden="true"></span>
+      </div>
+      <div class="about-copy">
+        <span class="mono">Sobre mí</span>
+        <h2>Soy Daniel Olaya</h2>
+        <p>Editor de video corto en Bogotá. Me fijo en una sola cosa: que la gente vea tu video hasta el final.</p>
+        <p>Me gusta el storytelling, el texto en pantalla y el diseño sonoro. Si tu contenido es bueno pero no está rindiendo, muchas veces lo que falta está en la edición, y eso es lo que arreglo.</p>
+        <div class="tools"><span>CapCut</span><span>DaVinci Resolve</span><span>Reels</span><span>TikTok</span><span>YouTube Shorts</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section final" id="contacto">
+    <div class="wrap">
+      <span class="mono">Contacto</span>
+      <h2>¿Tienes un video grabado y <em>sin editar?</em></h2>
+      <p>Mándamelo y te muestro cómo quedaría. Respondo el mismo día.</p>
+      <div class="socials">
+        <a class="btn btn-rec js-wa" href="#contacto">Escríbeme por WhatsApp</a>
+        <a class="btn btn-ghost" href="https://www.instagram.com/daniel_effort/" target="_blank" rel="noopener">Instagram @daniel_effort</a>
+        <a class="btn btn-ghost" href="https://www.tiktok.com/@daniel_effort" target="_blank" rel="noopener">TikTok</a>
+      </div>
+      <p class="mail">Correo: <a class="js-mail" href="#contacto"></a><button type="button" class="js-copy">Copiar</button></p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap mono">
+    <span>© 2026 Daniel Effort</span>
+    <span>Editor de video corto · Bogotá, Colombia</span>
+  </div>
+</footer>
+
+<script>
+/* ===== CONFIGURACIÓN: cambia solo esto ===== */
+// Tu número con código de país, sin + ni espacios. Ej: "573001234567"
+const WHATSAPP = "573012637140";
+const INSTAGRAM = "daniel_effort";
+const MENSAJE = "Hola Daniel, vi tu portafolio y me interesa que edites mis videos.";
+const CORREO = ["dolayacante2", "gmail.com"].join("@"); // armado por partes para que los bots no lo copien
+const TXT_COPIAR = "Copiar", TXT_COPIADO = "Copiado";
+// Video de presentación (deja "" hasta tener el archivo en /media)
+const VIDEO_PRESENTACION = "media/presentacion.mp4";
+// Trabajos. Pon el nombre del MP4 en "video" cuando lo tengas en /media.
+const TRABAJOS = [
+  { poster: "media/poster-ad-1.jpg", video: "media/ad-lovanar-1.mp4", tipo: "Anuncio · problema y solución", titulo: "Anuncio para Lovanar", hice: "Gancho con el problema, producto en acción y cierre con la marca. En inglés." },
+  { poster: "media/poster-1.jpg", video: "media/edit-20.mp4", tipo: "Storytelling biográfico", titulo: "La infancia de Rockefeller", hice: "Fotos de archivo, rótulos, ritmo narrativo y música." },
+  { poster: "media/poster-4.jpg", video: "media/edit-18.mp4", tipo: "Talking head", titulo: "Cómo ser editor de video en 2025", hice: "Subtítulos dinámicos, cortes sin silencios, íconos y B-roll." },
+  { poster: "media/poster-carton.jpg", video: "media/carton.mp4", tipo: "Sketch de comedia", titulo: "El cartón de leche", hice: "Entrevistas con rótulos, flashback y color por escena." },
+  { poster: "media/poster-3.jpg", video: "media/edit-9.mp4", tipo: "Podcast + B-roll cinematográfico", titulo: "El poder de la pausa", hice: "Podcast mezclado con escenas de cine, subtítulos en escena y color cálido." },
+  { poster: "media/poster-2.jpg", video: "media/edit-13.mp4", tipo: "Storytelling ilustrado", titulo: "La procrastinación no es pereza", hice: "Collage animado, títulos con énfasis y diseño sonoro." }
+];
+const EXTRAS = [
+  { poster: "media/poster-ad-2.jpg", video: "media/ad-lovanar-2.mp4", tipo: "Anuncio · autocuidado", titulo: "Anuncio para Lovanar 2", hice: "Ángulo emocional, tipografía serif y tomas de producto." },
+  { poster: "media/poster-6.jpg", video: "media/edit-18-mg2.mp4", tipo: "Motion tipográfico", titulo: "El mayor error", hice: "Texto cinético, transiciones y contraste fuerte." },
+  { poster: "media/poster-viaje.jpg", video: "media/edit-viaje.mp4", tipo: "Montaje · 16:9", titulo: "Montaje de viaje", hice: "Transiciones con máscara, cuadros divididos y ritmo con la música.", horizontal: true }
+];
+/* ========================================== */
+
+const waLink = (msg) => WHATSAPP
+  ? `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`
+  : `https://ig.me/m/${INSTAGRAM}`;
+document.querySelectorAll(".js-wa").forEach((a) => {
+  a.href = waLink(a.dataset.msg || MENSAJE);
+  a.target = "_blank";
+  a.rel = "noopener";
+});
+
+// Correo de contacto
+document.querySelectorAll(".js-mail").forEach((a) => { a.href = "mailto:" + CORREO; a.textContent = CORREO; });
+document.querySelectorAll(".js-copy").forEach((b) => b.addEventListener("click", () => {
+  navigator.clipboard.writeText(CORREO)
+    .then(() => { b.textContent = TXT_COPIADO; setTimeout(() => { b.textContent = TXT_COPIAR; }, 1800); })
+    .catch(() => { const r = document.createRange(); r.selectNodeContents(b.previousElementSibling); const s = getSelection(); s.removeAllRanges(); s.addRange(r); });
+}));
+
+// Tarjetas de trabajos
+const icoMuted = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Zm12.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4-2.7-2.7Z"/></svg>';
+const icoSound = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Zm11.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4ZM13 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg>';
+const render = (list, grid, offset) => list.forEach((t, i) => {
+  const n = String(i + 1 + offset).padStart(2, "0");
+  const fig = document.createElement("figure");
+  fig.className = t.horizontal ? "card wide" : "card";
+  fig.innerHTML = `
+    <div class="frame${t.horizontal ? " h" : ""}">
+      <img src="${t.poster}" alt="Portada del video ${t.titulo}" loading="lazy">
+      <span class="num mono">Clip ${n}</span>
+    </div>
+    <figcaption>
+      <span class="mono kind">${t.tipo}</span>
+      <h3>${t.titulo}</h3>
+      <p>${t.hice}</p>
+    </figcaption>`;
+  if (t.video) {
+    const frame = fig.querySelector(".frame");
+    const v = document.createElement("video");
+    v.muted = true; v.loop = true; v.playsInline = true; v.preload = "none";
+    v.poster = t.poster; v.dataset.src = t.video;
+    v.setAttribute("aria-label", `Video ${t.titulo}`);
+    frame.appendChild(v);
+    const b = document.createElement("button");
+    b.className = "sound"; b.type = "button";
+    b.setAttribute("aria-label", "Activar sonido");
+    b.innerHTML = icoMuted;
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".frame video").forEach((o) => { if (o !== v) o.muted = true; });
+      document.querySelectorAll(".frame .sound").forEach((o) => { if (o !== b) { o.innerHTML = icoMuted; o.setAttribute("aria-label", "Activar sonido"); } });
+      v.muted = !v.muted;
+      b.innerHTML = v.muted ? icoMuted : icoSound;
+      b.setAttribute("aria-label", v.muted ? "Activar sonido" : "Silenciar");
+    });
+    frame.appendChild(b);
+  }
+  grid.appendChild(fig);
+});
+render(TRABAJOS, document.getElementById("grid"), 0);
+render(EXTRAS, document.getElementById("grid-extra"), TRABAJOS.length);
+
+// Reproduce cada video solo mientras está en pantalla
+const io = "IntersectionObserver" in window ? new IntersectionObserver((entries) => {
+  entries.forEach(({ target: v, isIntersecting }) => {
+    if (isIntersecting) {
+      if (!v.src) v.src = v.dataset.src;
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+    }
+  });
+}, { threshold: 0.6 }) : null;
+document.querySelectorAll(".frame video").forEach((v) => io && io.observe(v));
+
+// Video de presentación
+if (VIDEO_PRESENTACION) {
+  const btn = document.getElementById("intro-play");
+  btn.hidden = false;
+  btn.addEventListener("click", () => {
+    const v = document.createElement("video");
+    v.src = VIDEO_PRESENTACION; v.controls = true; v.playsInline = true;
+    v.poster = document.getElementById("intro-poster").src;
+    document.getElementById("intro-poster").replaceWith(v);
+    btn.remove();
+    v.play().catch(() => {});
+  });
+}
+
+// Subtítulo palabra por palabra + timecode del header
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const words = [...document.querySelectorAll("#caption .w")];
+const tc = document.getElementById("tc");
+if (!reduce) {
+  let i = 0;
+  setInterval(() => {
+    words.forEach((w) => w.classList.remove("on"));
+    words[i % words.length].classList.add("on");
+    i++;
+  }, 520);
+  const t0 = performance.now();
+  const pad = (x) => String(x).padStart(2, "0");
+  const tick = (now) => {
+    const f = Math.floor((now - t0) / (1000 / 30));
+    const s = Math.floor(f / 30);
+    tc.textContent = `00:${pad(Math.floor(s / 60) % 60)}:${pad(s % 60)}:${pad(f % 30)}`;
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+</script>
+</body>
+</html>

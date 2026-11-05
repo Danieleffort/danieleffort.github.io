@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daniel Effort Neon</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Daniel Effort, editor de video corto en Bogotá. Reels, TikToks, Shorts y anuncios con gancho, subtítulos dinámicos y ritmo.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CO">
+<meta property="og:title" content="Daniel Effort &middot; Editor de video corto">
+<meta property="og:description" content="Reels, TikToks, Shorts y anuncios con gancho, subt&iacute;tulos din&aacute;micos y ritmo. Bogot&aacute;.">
+<meta property="og:url" content="https://danieleffort.github.io/neon/">
+<meta property="og:image" content="https://danieleffort.github.io/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="alternate" hreflang="es" href="https://danieleffort.github.io/neon/">
+<link rel="alternate" hreflang="en" href="https://danieleffort.github.io/en/neon/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: estudio de noche. Fondo casi negro con luces de neón difuminadas que se mueven despacio,
+   paneles de vidrio como los del editor, y una onda de señal neón que subraya los títulos. */
+:root {
+  --bg: #07060d;
+  --fg: #f3f1fb;
+  --muted: #a39fb8;
+  --glass: rgba(255, 255, 255, .045);
+  --glass-2: rgba(255, 255, 255, .08);
+  --edge: rgba(255, 255, 255, .11);
+  --magenta: #ff2bd6;
+  --violet: #8b5cf6;
+  --cyan: #22e1ff;
+  --neon: linear-gradient(100deg, #ff2bd6 0%, #8b5cf6 50%, #22e1ff 100%);
+  --font-display: "Outfit", "Segoe UI", system-ui, sans-serif;
+  --font-body: "DM Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Consolas", monospace;
+  --step--1: .8125rem;
+  --step-0: 1rem;
+  --step-1: 1.1875rem;
+  --step-2: clamp(1.9rem, 1.3rem + 2.4vw, 3rem);
+  --step-3: clamp(2.6rem, 1.3rem + 5.2vw, 5.4rem);
+  --wrap: 1160px;
+  --r: 20px;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font: 400 var(--step-0)/1.65 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+img, video { max-width: 100%; display: block; }
+a { color: inherit; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 8px; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+main { overflow-x: clip; position: relative; z-index: 1; }
+.wrap {
+  max-width: var(--wrap); margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.mono { font-family: var(--font-mono); font-size: var(--step--1); letter-spacing: .04em; color: var(--muted); }
+
+/* Luces de fondo */
+.aurora { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.orb { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; animation: float 22s ease-in-out infinite; }
+.orb.o1 { width: 560px; height: 560px; left: -180px; top: -160px; background: radial-gradient(circle, #ff2bd6 0%, rgba(255, 43, 214, 0) 68%); }
+.orb.o2 { width: 620px; height: 620px; right: -220px; top: 18%; background: radial-gradient(circle, #6d3bff 0%, rgba(109, 59, 255, 0) 68%); animation-delay: -7s; }
+.orb.o3 { width: 520px; height: 520px; left: 20%; bottom: -260px; background: radial-gradient(circle, #22e1ff 0%, rgba(34, 225, 255, 0) 68%); opacity: .35; animation-delay: -14s; }
+@keyframes float { 0%, 100% { transform: translate(0, 0) scale(1); } 33% { transform: translate(60px, 40px) scale(1.08); } 66% { transform: translate(-40px, 70px) scale(.95); } }
+.grain { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .5;
+  background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size: 64px 64px; mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 75%); }
+
+/* Vidrio */
+.glass {
+  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.025));
+  border: 1px solid var(--edge); border-radius: var(--r);
+  backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+.neon-edge {
+  border: 1px solid transparent;
+  background: linear-gradient(180deg, rgba(20,16,36,.82), rgba(12,10,22,.82)) padding-box, var(--neon) border-box;
+}
+
+/* Botones */
+.btn {
+  display: inline-flex; align-items: center; gap: .6em; padding: .9em 1.4em; border-radius: 999px;
+  font: 600 var(--step-0)/1 var(--font-body); text-decoration: none; border: 1px solid var(--edge);
+  transition: transform .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.btn svg { width: 1.15em; height: 1.15em; flex: none; }
+.btn-neon { background: var(--neon); color: #fff; border-color: transparent; box-shadow: 0 8px 30px -6px rgba(255, 43, 214, .6), 0 0 0 1px rgba(255,255,255,.12) inset; }
+.btn-neon:hover { transform: translateY(-2px); box-shadow: 0 12px 40px -6px rgba(139, 92, 246, .8), 0 0 0 1px rgba(255,255,255,.2) inset; }
+.btn-glass { background: var(--glass); color: var(--fg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.btn-glass:hover { background: var(--glass-2); transform: translateY(-2px); }
+
+/* Onda neón (señal) */
+.wave { display: block; height: auto; overflow: visible; filter: drop-shadow(0 0 8px rgba(255, 43, 214, .7)) drop-shadow(0 0 18px rgba(34, 225, 255, .45)); }
+.wave path { animation: flow 3.2s linear infinite; stroke-dasharray: 46 10; }
+@keyframes flow { to { stroke-dashoffset: -112; } }
+
+/* Barra de navegación */
+.nav { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); z-index: 30; padding-top: 12px; }
+.nav .bar { display: flex; align-items: center; gap: 16px; padding: 8px 8px 8px 18px; border-radius: 999px; }
+.logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font: 700 1.0625rem/1 var(--font-display); letter-spacing: .01em; white-space: nowrap; }
+.logo i { width: 10px; height: 10px; border-radius: 50%; background: var(--magenta); box-shadow: 0 0 12px var(--magenta), 0 0 2px #fff inset; }
+.links { display: flex; gap: 2px; margin-left: auto; }
+.links a { text-decoration: none; padding: 8px 12px; border-radius: 999px; font-weight: 500; font-size: .9375rem; color: var(--muted); }
+.links a:hover { color: var(--fg); background: var(--glass-2); }
+.nav .btn { padding: .7em 1.1em; font-size: .875rem; }
+.lang { text-decoration: none; font: 500 .8125rem/1 var(--font-mono); padding: 9px 12px; border-radius: 999px; border: 1px solid var(--edge); color: var(--fg); background: var(--glass); }
+.lang:hover { border-color: var(--cyan); box-shadow: 0 0 14px rgba(34, 225, 255, .35); }
+@media (max-width: 860px) { .links { display: none; } .lang { margin-left: auto; } }
+
+/* Hero */
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: clamp(36px, 5vw, 72px); align-items: center; padding-block: clamp(56px, 8vw, 110px) clamp(64px, 8vw, 110px); }
+.hero-copy { display: grid; gap: 24px; min-width: 0; }
+.badge { justify-self: start; display: inline-flex; align-items: center; gap: 10px; padding: 7px 14px 7px 8px; border-radius: 999px; font-size: .875rem; font-weight: 500; }
+.badge b { font: 600 .75rem/1 var(--font-body); padding: 5px 8px; border-radius: 999px; background: rgba(34, 225, 255, .14); color: var(--cyan); }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: var(--step-3); line-height: 1.02; letter-spacing: -.025em; position: relative; }
+h1 .outline { color: transparent; -webkit-text-stroke: 1.5px rgba(243, 241, 251, .85); }
+h1 .grad { background: var(--neon); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 22px rgba(255, 43, 214, .35)); }
+.h1-wave { width: min(320px, 60%); margin-top: -6px; }
+.lede { font-size: var(--step-1); max-width: 38ch; color: #d9d5ea; }
+.lede b { color: #fff; font-weight: 600; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 14px; }
+.hint { color: var(--muted); font-size: .9375rem; }
+.apps { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.apps .mono { margin-right: 4px; }
+.apps span.app { padding: 6px 12px; border-radius: 10px; font-weight: 600; font-size: .875rem; }
+
+/* Monitor */
+.stage { position: relative; justify-self: center; width: min(100%, 330px); display: grid; gap: 14px; }
+.stage::before { content: ""; position: absolute; inset: 8% -12% 10%; background: var(--neon); filter: blur(60px); opacity: .45; border-radius: 40px; z-index: -1; }
+.phone { padding: 10px; border-radius: 30px; }
+.screen { position: relative; aspect-ratio: 9 / 16; max-width: 100%; border-radius: 22px; overflow: hidden; background: #000; }
+.screen img, .screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.play {
+  position: absolute; left: 50%; bottom: 7%; transform: translateX(-50%); z-index: 2;
+  display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,.25); cursor: pointer;
+  background: rgba(10, 8, 20, .55); color: #fff; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  padding: 10px 16px; border-radius: 999px; font: 600 .875rem/1 var(--font-body); white-space: nowrap;
+}
+.play svg { width: 12px; height: 12px; }
+.dock { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 8px; border-radius: 18px; }
+.dock span { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; color: #cfcbe4; }
+.dock span.on { background: linear-gradient(140deg, rgba(34,225,255,.3), rgba(139,92,246,.3)); color: #fff; box-shadow: 0 0 18px rgba(34, 225, 255, .5), inset 0 0 0 1px rgba(34,225,255,.6); }
+.dock svg { width: 20px; height: 20px; }
+.dock .tc { width: auto; font-variant-numeric: tabular-nums; color: var(--fg); padding-right: 6px; }
+@media (max-width: 860px) { .hero .wrap { grid-template-columns: 1fr; } .stage { width: min(100%, 290px); } }
+@media (max-width: 400px) { .dock span:nth-child(5) { display: none; } }
+
+/* Secciones */
+.section { padding-block: clamp(64px, 9vw, 120px); position: relative; }
+.head { display: grid; gap: 10px; margin-bottom: 36px; max-width: 720px; }
+.head.center { text-align: center; justify-items: center; margin-inline: auto; }
+.head p { color: var(--muted); font-size: 1.0625rem; max-width: 56ch; }
+.kicker { display: inline-flex; align-items: center; gap: 8px; color: var(--cyan); }
+.kicker::before { content: ""; width: 18px; height: 2px; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: var(--step-2); line-height: 1.08; letter-spacing: -.02em; }
+h2 .grad { background: var(--neon); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.h2-wave { width: 150px; }
+
+/* Línea de tiempo */
+.tl-panel { padding: 18px; }
+.tl-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.tl-top .mono:last-child { margin-left: auto; color: var(--fg); font-variant-numeric: tabular-nums; }
+.tl-scroll { overflow-x: auto; }
+.tl { min-width: 680px; position: relative; padding: 4px 0 8px 84px; }
+.ruler { position: relative; height: 20px; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.ruler span { position: absolute; top: 0; transform: translateX(-50%); font: 400 .75rem/1 var(--font-mono); color: #7e7a94; }
+.ruler span:first-child { transform: none; }
+.ruler span:last-child { transform: translateX(-100%); }
+.track { position: relative; height: 36px; margin-top: 7px; }
+.track > b { position: absolute; left: -80px; top: 50%; transform: translateY(-50%); width: 70px; font: 500 .75rem/1 var(--font-mono); color: var(--muted); }
+.clip-b {
+  position: absolute; top: 0; bottom: 0; border-radius: 9px; padding: 0 10px;
+  display: flex; align-items: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  font: 600 .75rem/1 var(--font-body); color: #fff; border: 1px solid rgba(255,255,255,.18);
+}
+.k-m { background: linear-gradient(90deg, rgba(255,43,214,.85), rgba(255,43,214,.55)); box-shadow: 0 0 16px rgba(255,43,214,.45); }
+.k-v { background: linear-gradient(90deg, rgba(139,92,246,.8), rgba(139,92,246,.5)); }
+.k-c { background: linear-gradient(90deg, rgba(34,225,255,.55), rgba(34,225,255,.3)); }
+.k-a {
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.55) 0 2px, transparent 2px 6px) center / 100% 44% no-repeat,
+    linear-gradient(90deg, rgba(34,225,255,.28), rgba(139,92,246,.28));
+}
+.k-s { background: rgba(255,255,255,.1); }
+.playhead { position: absolute; top: 0; bottom: 4px; left: 84px; width: 2px; background: var(--cyan); box-shadow: 0 0 12px var(--cyan), 0 0 24px var(--cyan); animation: sweep 9s linear infinite; pointer-events: none; }
+.playhead::before { content: ""; position: absolute; top: -5px; left: -6px; width: 14px; height: 10px; background: var(--cyan); clip-path: polygon(0 0, 100% 0, 50% 100%); }
+@keyframes sweep { from { left: 84px; } to { left: 100%; } }
+
+.feats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+.feat { padding: 22px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.ico {
+  width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; color: #fff;
+  background: linear-gradient(140deg, rgba(255,255,255,.12), rgba(255,255,255,.03));
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 0 22px var(--glow, rgba(255,43,214,.45)), inset 0 0 12px rgba(255,255,255,.06);
+}
+.ico svg { width: 22px; height: 22px; color: var(--glow-c, var(--magenta)); filter: drop-shadow(0 0 6px currentColor); }
+.feat h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.1875rem; }
+.feat p { color: var(--muted); font-size: .9375rem; }
+@media (max-width: 960px) { .feats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .feats { grid-template-columns: 1fr; } }
+
+/* Trabajos */
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(16px, 2.4vw, 26px); }
+.grid-extra { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 3.16fr); align-items: start; }
+@media (max-width: 860px) {
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid-extra .card.wide { grid-column: 1 / -1; }
+}
+.card { margin: 0; min-width: 0; padding: 8px; display: grid; gap: 4px; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+.card:hover { transform: translateY(-6px); border-color: rgba(255,255,255,.22); box-shadow: 0 20px 50px -20px var(--c, var(--magenta)); }
+.frame { position: relative; aspect-ratio: 9 / 16; max-width: 100%; border-radius: 14px; overflow: hidden; background: #000; }
+.frame.h { aspect-ratio: 16 / 9; }
+.frame img, .frame video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.frame .num { position: absolute; left: 10px; top: 10px; z-index: 2; padding: 4px 8px; border-radius: 999px; background: rgba(8,6,16,.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; border: 1px solid rgba(255,255,255,.18); }
+.frame .sound {
+  position: absolute; right: 10px; bottom: 10px; z-index: 2; cursor: pointer;
+  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(8,6,16,.55); color: #fff; border: 1px solid rgba(255,255,255,.22);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.frame .sound svg { width: 18px; height: 18px; }
+.card figcaption { display: grid; gap: 6px; padding: 12px 8px 10px; }
+.card .kind { font: 500 .75rem/1.2 var(--font-mono); letter-spacing: .04em; color: var(--c, var(--magenta)); text-shadow: 0 0 12px var(--c, var(--magenta)); }
+.card h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.0625rem; line-height: 1.3; }
+.card p { color: var(--muted); font-size: .9rem; line-height: 1.5; }
+.subhead { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 32px; margin: clamp(56px, 7vw, 80px) 0 22px; }
+.subhead h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; }
+
+/* Proceso */
+.steps-wrap { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.steps li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: center; padding: 16px 18px; }
+.steps .n {
+  width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center;
+  font: 600 1.125rem/1 var(--font-display); color: #fff;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.25), rgba(255,255,255,.02) 60%), var(--sc, var(--violet));
+  box-shadow: 0 0 24px var(--sc, var(--violet));
+}
+.steps h3 { font-family: var(--font-display); font-weight: 600; font-size: 1.125rem; }
+.steps p { color: var(--muted); font-size: .9375rem; }
+.offer { padding: clamp(24px, 3.4vw, 40px); border-radius: 26px; display: grid; gap: 16px; justify-items: start; position: relative; }
+.offer::after { content: ""; position: absolute; inset: auto 10% -30px; height: 60px; background: var(--neon); filter: blur(40px); opacity: .5; z-index: -1; }
+.offer h3 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.6rem, 1.1rem + 2vw, 2.4rem); line-height: 1.1; }
+.offer h3 span { background: var(--neon); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.offer p { color: #d9d5ea; max-width: 46ch; }
+@media (max-width: 860px) { .steps-wrap { grid-template-columns: 1fr; } }
+
+/* Sobre mí */
+.about .wrap { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: clamp(36px, 5vw, 80px); align-items: center; }
+.portrait { position: relative; max-width: 380px; width: 100%; justify-self: center; }
+.portrait::before { content: ""; position: absolute; inset: -14px; border-radius: 34px; background: var(--neon); filter: blur(34px); opacity: .55; z-index: -1; }
+.portrait .ring { padding: 2px; border-radius: 28px; background: var(--neon); }
+.portrait img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 26px; }
+.portrait .tag { position: absolute; left: 16px; bottom: 16px; padding: 8px 12px; border-radius: 12px; font-weight: 600; font-size: .875rem; display: inline-flex; align-items: center; gap: 8px; }
+.portrait .tag i { width: 8px; height: 8px; border-radius: 50%; background: #3dffa2; box-shadow: 0 0 10px #3dffa2; }
+.about-copy { display: grid; gap: 18px; max-width: 60ch; min-width: 0; }
+.about-copy p { font-size: 1.0625rem; color: #d9d5ea; }
+.about-copy p + p { color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chips span { padding: 7px 13px; border-radius: 999px; font-weight: 500; font-size: .875rem; }
+@media (max-width: 860px) { .about .wrap { grid-template-columns: 1fr; } .portrait { max-width: 290px; } }
+
+/* Contacto */
+.final .box { padding: clamp(32px, 6vw, 72px); border-radius: 32px; display: grid; gap: 22px; justify-items: center; text-align: center; position: relative; overflow: hidden; }
+.final .box::before { content: ""; position: absolute; width: 70%; height: 140%; left: 15%; top: 40%; background: radial-gradient(circle, rgba(139,92,246,.55), transparent 65%); filter: blur(30px); z-index: -1; }
+.final h2 { font-size: clamp(2.1rem, 1.2rem + 3.8vw, 4rem); max-width: 16ch; }
+.final p { font-size: var(--step-1); color: #d9d5ea; max-width: 42ch; }
+.socials { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.mail { font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted); display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; }
+.mail a { color: var(--fg); }
+.mail button { font: inherit; color: var(--fg); background: var(--glass); border: 1px solid var(--edge); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; padding-block: 8px 36px; position: relative; z-index: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .orb, .wave path, .playhead { animation: none; }
+  .playhead { left: 30%; }
+  .btn, .card { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="neon" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#ff2bd6"/><stop offset=".5" stop-color="#8b5cf6"/><stop offset="1" stop-color="#22e1ff"/>
+    </linearGradient>
+    <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="6" cy="18" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.1 8.1L20 20M8.1 15.9L20 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6V4h14v2M12 4v16M9 20h6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><path d="M12 3l9 9-9 9-9-9z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 11v2M6.5 8v8M10 4v16M13.5 7.5v9M17 5v14M20.5 10v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-color" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 3a9 9 0 010 18z" fill="currentColor"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-cc" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 10.5a2 2 0 100 3M16 10.5a2 2 0 100 3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-cut" viewBox="0 0 24 24"><path d="M12 3v18M5 8l-2 4 2 4M19 8l2 4-2 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M16 9a4 4 0 010 6M18.5 6.5a7.5 7.5 0 010 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.8 14.1c-.2.7-1.4 1.3-2 1.4-.5.1-1.2.1-1.9-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5.1-4.5-.1-.2-1.2-1.6-1.2-3.1s.8-2.2 1-2.5c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.3 0 .5l-.3.5-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.6 2.1 1.1 1 2.1 1.3 2.4 1.4.3.2.5.1.6-.1l.9-1.1c.2-.3.4-.2.6-.1l2 .9c.3.1.5.2.5.3.1.2.1.7-.1 1.4Z"/></symbol>
+  </defs>
+</svg>
+
+<div class="aurora" aria-hidden="true"><span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span></div>
+<div class="grain" aria-hidden="true"></div>
+
+<main id="inicio">
+  <div class="nav wrap">
+    <div class="bar glass">
+      <a class="logo" href="#inicio"><i></i>Daniel Effort</a>
+      <nav class="links" aria-label="Secciones">
+        <a href="#edicion">Qué hago</a>
+        <a href="#trabajos">Trabajos</a>
+        <a href="#proceso">Proceso</a>
+        <a href="#sobre-mi">Sobre mí</a>
+      </nav>
+      <a class="lang" href="/en/neon/" hreflang="en" lang="en">EN</a>
+      <a class="btn btn-neon js-wa" href="#contacto"><svg aria-hidden="true"><use href="#i-wa"/></svg>Escríbeme</a>
+    </div>
+  </div>
+
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <span class="badge glass"><b>Disponible</b>Editor de video corto · Bogotá</span>
+        <div>
+          <h1>Edito <span class="outline">videos</span> que nadie quiere <span class="grad">saltar.</span></h1>
+          <svg class="wave h1-wave" viewBox="0 0 240 40" aria-hidden="true"><path d="M6 20 C 26 2, 46 2, 66 20 S 106 38, 126 20 S 166 2, 186 20 S 226 38, 234 26" fill="none" stroke="url(#neon)" stroke-width="7" stroke-linecap="round"/></svg>
+        </div>
+        <p class="lede">Reels, TikToks, Shorts y anuncios con <b>gancho en los primeros 3 segundos</b>, subtítulos que se leen solos y un ritmo que no deja ir. Para creadores de contenido, marcas y negocios.</p>
+        <div class="cta-row">
+          <a class="btn btn-neon js-wa" href="#contacto"><svg aria-hidden="true"><use href="#i-wa"/></svg>Escríbeme por WhatsApp</a>
+          <a class="btn btn-glass" href="#trabajos">Ver trabajos</a>
+        </div>
+        <p class="hint">¿Te escribí por Instagram o TikTok? Respóndeme por ahí mismo, también vale.</p>
+        <div class="apps"><span class="mono">Edito en</span><span class="app glass">CapCut</span><span class="app glass">DaVinci Resolve</span></div>
+      </div>
+
+      <div class="stage">
+        <div class="phone neon-edge">
+          <div class="screen">
+            <img src="../media/poster-presentacion.jpg" alt="Daniel hablando a cámara en su video de presentación" id="intro-poster">
+            <button class="play" type="button" id="intro-play" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Mira quién soy</button>
+          </div>
+        </div>
+        <div class="dock glass" aria-hidden="true">
+          <span><svg><use href="#i-scissors"/></svg></span>
+          <span class="on"><svg><use href="#i-text"/></svg></span>
+          <span><svg><use href="#i-key"/></svg></span>
+          <span><svg><use href="#i-wave"/></svg></span>
+          <span><svg><use href="#i-color"/></svg></span>
+          <span class="mono tc" id="tc">00:00:00</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="edicion">
+    <div class="wrap">
+      <div class="head">
+        <span class="kicker mono">Línea de tiempo</span>
+        <h2>Lo que le pasa a <span class="grad">tu video</span></h2>
+        <p>Así se ve un Reel de 30 segundos en mi línea de tiempo. Cada capa tiene un trabajo.</p>
+      </div>
+
+      <div class="tl-panel glass">
+        <div class="tl-top"><span class="mono">reel_cliente_v3.mp4 · 1080×1920 · 30 fps</span><span class="mono">00:30:00</span></div>
+        <div class="tl-scroll" role="img" aria-label="Línea de tiempo de un Reel de 30 segundos con pistas de texto, video, voz y efectos">
+          <div class="tl">
+            <div class="ruler">
+              <span style="left:0">00:00</span><span style="left:16.66%">00:05</span><span style="left:33.33%">00:10</span><span style="left:50%">00:15</span><span style="left:66.66%">00:20</span><span style="left:83.33%">00:25</span><span style="left:100%">00:30</span>
+            </div>
+            <div class="track"><b>TXT</b>
+              <span class="clip-b k-m" style="left:0;width:10%">Gancho</span>
+              <span class="clip-b k-v" style="left:10.4%;width:73%">Subtítulos palabra por palabra</span>
+              <span class="clip-b k-m" style="left:84%;width:16%">Llamado a la acción</span>
+            </div>
+            <div class="track"><b>V1</b>
+              <span class="clip-b k-c" style="left:0;width:30%">Cámara</span>
+              <span class="clip-b k-c" style="left:30.4%;width:13%">B-roll</span>
+              <span class="clip-b k-c" style="left:43.8%;width:29%">Cámara + zoom</span>
+              <span class="clip-b k-c" style="left:73.2%;width:10.4%">B-roll</span>
+              <span class="clip-b k-c" style="left:84%;width:16%">Cierre</span>
+            </div>
+            <div class="track"><b>A1 Voz</b>
+              <span class="clip-b k-a" style="left:0;width:100%">Voz sin silencios ni muletillas</span>
+            </div>
+            <div class="track"><b>A2 SFX</b>
+              <span class="clip-b k-s" style="left:9%;width:5%">Whoosh</span>
+              <span class="clip-b k-s" style="left:29.6%;width:5%">Pop</span>
+              <span class="clip-b k-s" style="left:62%;width:11%">Riser</span>
+              <span class="clip-b k-s" style="left:83%;width:6%">Hit</span>
+            </div>
+            <span class="playhead" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="feats">
+        <div class="feat glass"><span class="ico" style="--glow:rgba(255,43,214,.45);--glow-c:#ff6be3"><svg><use href="#i-bolt"/></svg></span><span class="mono">TXT · 0–3 s</span><h3>Gancho</h3><p>Los primeros 3 segundos deciden si se quedan. Abro con la frase más fuerte, no con el saludo.</p></div>
+        <div class="feat glass"><span class="ico" style="--glow:rgba(139,92,246,.5);--glow-c:#b49bff"><svg><use href="#i-cc"/></svg></span><span class="mono">TXT</span><h3>Subtítulos</h3><p>Mucha gente ve sin sonido. Los subtítulos cuentan la historia solos y resaltan lo que importa.</p></div>
+        <div class="feat glass"><span class="ico" style="--glow:rgba(34,225,255,.45);--glow-c:#7defff"><svg><use href="#i-cut"/></svg></span><span class="mono">V1 · A1</span><h3>Ritmo</h3><p>Quito silencios y muletillas, y meto zooms o B-roll justo donde la atención empieza a bajar.</p></div>
+        <div class="feat glass"><span class="ico" style="--glow:rgba(255,43,214,.35);--glow-c:#ff9bea"><svg><use href="#i-sound"/></svg></span><span class="mono">A2</span><h3>Sonido</h3><p>Efectos y música que marcan cada corte sin tapar tu voz.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="trabajos">
+    <div class="wrap">
+      <div class="head">
+        <span class="kicker mono">Portafolio</span>
+        <h2>Trabajos</h2>
+        <svg class="wave h2-wave" viewBox="0 0 240 40" aria-hidden="true"><path d="M6 20 C 26 2, 46 2, 66 20 S 106 38, 126 20 S 166 2, 186 20 S 226 38, 234 26" fill="none" stroke="url(#neon)" stroke-width="8" stroke-linecap="round"/></svg>
+        <p>Toca el ícono de sonido en cualquier video para escucharlo.</p>
+      </div>
+      <div class="grid" id="grid"></div>
+      <div class="subhead">
+        <h3>Más trabajos</h3>
+        <span class="mono">Anuncio · motion · 16:9</span>
+      </div>
+      <div class="grid grid-extra" id="grid-extra"></div>
+    </div>
+  </section>
+
+  <section class="section" id="proceso">
+    <div class="wrap">
+      <div class="steps-wrap">
+        <div>
+          <div class="head">
+            <span class="kicker mono">Proceso</span>
+            <h2>Cómo <span class="grad">trabajamos</span></h2>
+            <p>Sin vueltas. Tú grabas, yo me encargo del resto.</p>
+          </div>
+          <ol class="steps">
+            <li class="glass" style="--sc:#ff2bd6"><span class="n">01</span><div><h3>Me mandas tu material</h3><p>El video en bruto por Drive o WeTransfer y, si tienes, un ejemplo del estilo que te gusta.</p></div></li>
+            <li class="glass" style="--sc:#b14bf0"><span class="n">02</span><div><h3>Edito</h3><p>Te entrego el primer corte en 24 a 48 horas.</p></div></li>
+            <li class="glass" style="--sc:#8b5cf6"><span class="n">03</span><div><h3>Ajustamos</h3><p>Dos rondas de cambios incluidas, para que quede como lo imaginas.</p></div></li>
+            <li class="glass" style="--sc:#22b8ff"><span class="n">04</span><div><h3>Publicas</h3><p>Te lo entrego listo para subir, en 1080 × 1920.</p></div></li>
+          </ol>
+        </div>
+        <div class="offer neon-edge">
+          <span class="mono">Prueba sin costo</span>
+          <h3>Hasta <span>30 segundos</span> editados gratis</h3>
+          <p>Mándame un video tuyo y te edito un fragmento de 15 a 30 segundos. Si te gusta cómo queda, hablamos del resto.</p>
+          <a class="btn btn-neon js-wa" data-msg="Hola Daniel, vi tu portafolio y quiero la prueba gratis." href="#contacto">Pedir mi prueba</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section about" id="sobre-mi">
+    <div class="wrap">
+      <div class="portrait">
+        <div class="ring"><img src="../media/foto-hero.jpg" alt="Retrato de Daniel Olaya encuadrando con las manos" loading="lazy"></div>
+        <span class="tag glass"><i></i>Daniel Olaya · Bogotá</span>
+      </div>
+      <div class="about-copy">
+        <span class="kicker mono">Sobre mí</span>
+        <h2>Soy <span class="grad">Daniel Olaya</span></h2>
+        <p>Editor de video corto en Bogotá. Me fijo en una sola cosa: que la gente vea tu video hasta el final.</p>
+        <p>Me gusta el storytelling, el texto en pantalla y el diseño sonoro. Si tu contenido es bueno pero no está rindiendo, muchas veces lo que falta está en la edición, y eso es lo que arreglo.</p>
+        <div class="chips"><span class="glass">CapCut</span><span class="glass">DaVinci Resolve</span><span class="glass">Reels</span><span class="glass">TikTok</span><span class="glass">YouTube Shorts</span><span class="glass">Anuncios</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section final" id="contacto">
+    <div class="wrap">
+      <div class="box glass">
+        <span class="kicker mono">Contacto</span>
+        <h2>¿Tienes un video grabado y <span class="grad">sin editar?</span></h2>
+        <p>Mándamelo y te muestro cómo quedaría. Respondo el mismo día.</p>
+        <div class="socials">
+          <a class="btn btn-neon js-wa" href="#contacto"><svg aria-hidden="true"><use href="#i-wa"/></svg>Escríbeme por WhatsApp</a>
+          <a class="btn btn-glass" href="https://www.instagram.com/daniel_effort/" target="_blank" rel="noopener">Instagram @daniel_effort</a>
+          <a class="btn btn-glass" href="https://www.tiktok.com/@daniel_effort" target="_blank" rel="noopener">TikTok</a>
+        </div>
+        <p class="mail">Correo: <a class="js-mail" href="#contacto"></a><button type="button" class="js-copy">Copiar</button></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap mono">
+    <span>© 2026 Daniel Effort</span>
+    <span>Editor de video corto · Bogotá, Colombia</span>
+  </div>
+</footer>
+
+<script>
+/* ===== CONFIGURACIÓN: cambia solo esto ===== */
+const WHATSAPP = "573012637140";
+const INSTAGRAM = "daniel_effort";
+const MENSAJE = "Hola Daniel, vi tu portafolio y me interesa que edites mis videos.";
+const CORREO = ["dolayacante2", "gmail.com"].join("@"); // armado por partes para que los bots no lo copien
+const TXT_COPIAR = "Copiar", TXT_COPIADO = "Copiado";
+const VIDEO_PRESENTACION = "../media/presentacion.mp4";
+// color: magenta | violet | cyan (brillo de la tarjeta y de su etiqueta)
+const TRABAJOS = [
+  { poster: "../media/poster-ad-1.jpg", video: "../media/ad-lovanar-1.mp4", color: "magenta", tipo: "Anuncio · problema y solución", titulo: "Anuncio para Lovanar", hice: "Gancho con el problema, producto en acción y cierre con la marca. En inglés." },
+  { poster: "../media/poster-1.jpg", video: "../media/edit-20.mp4", color: "cyan", tipo: "Storytelling biográfico", titulo: "La infancia de Rockefeller", hice: "Fotos de archivo, rótulos, ritmo narrativo y música." },
+  { poster: "../media/poster-4.jpg", video: "../media/edit-18.mp4", color: "violet", tipo: "Talking head", titulo: "Cómo ser editor de video en 2025", hice: "Subtítulos dinámicos, cortes sin silencios, íconos y B-roll." },
+  { poster: "../media/poster-carton.jpg", video: "../media/carton.mp4", color: "magenta", tipo: "Sketch de comedia", titulo: "El cartón de leche", hice: "Entrevistas con rótulos, flashback y color por escena." },
+  { poster: "../media/poster-3.jpg", video: "../media/edit-9.mp4", color: "cyan", tipo: "Podcast + B-roll cinematográfico", titulo: "El poder de la pausa", hice: "Podcast mezclado con escenas de cine, subtítulos en escena y color cálido." },
+  { poster: "../media/poster-2.jpg", video: "../media/edit-13.mp4", color: "violet", tipo: "Storytelling ilustrado", titulo: "La procrastinación no es pereza", hice: "Collage animado, títulos con énfasis y diseño sonoro." }
+];
+const EXTRAS = [
+  { poster: "../media/poster-ad-2.jpg", video: "../media/ad-lovanar-2.mp4", color: "magenta", tipo: "Anuncio · autocuidado", titulo: "Anuncio para Lovanar 2", hice: "Ángulo emocional, tipografía serif y tomas de producto." },
+  { poster: "../media/poster-6.jpg", video: "../media/edit-18-mg2.mp4", color: "violet", tipo: "Motion tipográfico", titulo: "El mayor error", hice: "Texto cinético, transiciones y contraste fuerte." },
+  { poster: "../media/poster-viaje.jpg", video: "../media/edit-viaje.mp4", color: "cyan", tipo: "Montaje · 16:9", titulo: "Montaje de viaje", hice: "Transiciones con máscara, cuadros divididos y ritmo con la música.", horizontal: true }
+];
+/* ========================================== */
+
+const COLORS = { magenta: "#ff4fe0", violet: "#a688ff", cyan: "#4fe8ff" };
+
+const waLink = (msg) => WHATSAPP
+  ? `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`
+  : `https://ig.me/m/${INSTAGRAM}`;
+document.querySelectorAll(".js-wa").forEach((a) => {
+  a.href = waLink(a.dataset.msg || MENSAJE);
+  a.target = "_blank";
+  a.rel = "noopener";
+});
+
+// Correo de contacto
+document.querySelectorAll(".js-mail").forEach((a) => { a.href = "mailto:" + CORREO; a.textContent = CORREO; });
+document.querySelectorAll(".js-copy").forEach((b) => b.addEventListener("click", () => {
+  navigator.clipboard.writeText(CORREO)
+    .then(() => { b.textContent = TXT_COPIADO; setTimeout(() => { b.textContent = TXT_COPIAR; }, 1800); })
+    .catch(() => { const r = document.createRange(); r.selectNodeContents(b.previousElementSibling); const s = getSelection(); s.removeAllRanges(); s.addRange(r); });
+}));
+
+const icoMuted = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Zm12.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4-2.7-2.7Z"/></svg>';
+const icoSound = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4Zm11.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4ZM13 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6Z"/></svg>';
+
+const render = (list, grid, offset) => list.forEach((t, i) => {
+  const n = String(i + 1 + offset).padStart(2, "0");
+  const fig = document.createElement("figure");
+  fig.className = (t.horizontal ? "card wide" : "card") + " glass";
+  fig.style.setProperty("--c", COLORS[t.color] || COLORS.magenta);
+  fig.innerHTML = `
+    <div class="frame${t.horizontal ? " h" : ""}">
+      <img src="${t.poster}" alt="Portada del video ${t.titulo}" loading="lazy">
+      <span class="num mono">${n}</span>
+    </div>
+    <figcaption>
+      <span class="kind">${t.tipo}</span>
+      <h3>${t.titulo}</h3>
+      <p>${t.hice}</p>
+    </figcaption>`;
+  if (t.video) {
+    const frame = fig.querySelector(".frame");
+    const v = document.createElement("video");
+    v.muted = true; v.loop = true; v.playsInline = true; v.preload = "none";
+    v.poster = t.poster; v.dataset.src = t.video;
+    v.setAttribute("aria-label", `Video ${t.titulo}`);
+    frame.appendChild(v);
+    const b = document.createElement("button");
+    b.className = "sound"; b.type = "button";
+    b.setAttribute("aria-label", "Activar sonido");
+    b.innerHTML = icoMuted;
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".frame video").forEach((o) => { if (o !== v) o.muted = true; });
+      document.querySelectorAll(".frame .sound").forEach((o) => { if (o !== b) { o.innerHTML = icoMuted; o.setAttribute("aria-label", "Activar sonido"); } });
+      v.muted = !v.muted;
+      b.innerHTML = v.muted ? icoMuted : icoSound;
+      b.setAttribute("aria-label", v.muted ? "Activar sonido" : "Silenciar");
+    });
+    frame.appendChild(b);
+  }
+  grid.appendChild(fig);
+});
+render(TRABAJOS, document.getElementById("grid"), 0);
+render(EXTRAS, document.getElementById("grid-extra"), TRABAJOS.length);
+
+// Reproduce cada video solo mientras está en pantalla
+const io = "IntersectionObserver" in window ? new IntersectionObserver((entries) => {
+  entries.forEach(({ target: v, isIntersecting }) => {
+    if (isIntersecting) {
+      if (!v.src) v.src = v.dataset.src;
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+    }
+  });
+}, { threshold: 0.6 }) : null;
+document.querySelectorAll(".frame video").forEach((v) => io && io.observe(v));
+
+// Video de presentación
+if (VIDEO_PRESENTACION) {
+  const btn = document.getElementById("intro-play");
+  btn.hidden = false;
+  btn.addEventListener("click", () => {
+    const poster = document.getElementById("intro-poster");
+    const v = document.createElement("video");
+    v.src = VIDEO_PRESENTACION; v.controls = true; v.playsInline = true; v.poster = poster.src;
+    poster.replaceWith(v);
+    btn.remove();
+    v.play().catch(() => {});
+  });
+}
+
+// Timecode del dock
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const tc = document.getElementById("tc");
+if (!reduce) {
+  const t0 = performance.now();
+  const pad = (x) => String(x).padStart(2, "0");
+  const tick = (now) => {
+    const f = Math.floor((now - t0) / (1000 / 30));
+    const s = Math.floor(f / 30);
+    tc.textContent = `${pad(Math.floor(s / 60) % 60)}:${pad(s % 60)}:${pad(f % 30)}`;
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+</script>
+</body>
+</html>
